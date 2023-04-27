@@ -1,10 +1,9 @@
 import React from "react";
+import ResponsiveAppBar from "../../components/AppBar";
 
 const Home: React.FC = () => {
   return (
-    <div>
-      <h1>Home</h1>
-    </div>
+    <ResponsiveAppBar />
   );
 }
 
