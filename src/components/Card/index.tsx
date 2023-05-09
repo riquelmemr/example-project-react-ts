@@ -10,28 +10,23 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useState } from "react";
-import { Contact, Context } from "../../types";
+import { useAppDispatch } from "../../store/hooks";
+import { updateOne } from "../../store/modules/contacts/contactsSlice";
+import { Contact, Context } from "../../types/contact";
 import Modal from "../Modal";
 
 interface CardCNProps {
   contact: Contact;
-  contacts: Contact[];
-  setContacts: React.Dispatch<React.SetStateAction<Contact[]>>;
 }
 
-const CardCN: React.FC<CardCNProps> = ({ contact, contacts, setContacts }) => {
+const CardCN: React.FC<CardCNProps> = ({ contact }) => {
   const [openModal, setOpenModal] = useState(false);
   const [context, setContext] = useState<Context>("create");
+  const dispatch = useAppDispatch();
 
-  const handleFavorite = (phone: string) => {
-    setContacts((prevState) =>
-      prevState.map((item) => {
-        if (item.phone === phone) {
-          return { ...item, favorite: !item.favorite };
-        }
-
-        return item;
-      })
+  const handleFavorite = () => {
+    dispatch(
+      updateOne({ id: contact.email, changes: { favorite: !contact.favorite } })
     );
   };
 
@@ -55,7 +50,7 @@ const CardCN: React.FC<CardCNProps> = ({ contact, contacts, setContacts }) => {
         <CardActions disableSpacing>
           <IconButton
             aria-label="toggle favorite"
-            onClick={() => handleFavorite(contact.phone)}
+            onClick={() => handleFavorite()}
           >
             {contact.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
           </IconButton>
@@ -78,7 +73,6 @@ const CardCN: React.FC<CardCNProps> = ({ contact, contacts, setContacts }) => {
         context={context}
         open={openModal}
         handleClose={() => setOpenModal(false)}
-        setContacts={setContacts}
         contact={contact}
       />
     </>

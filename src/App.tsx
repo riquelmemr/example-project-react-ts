@@ -1,6 +1,6 @@
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import AppRoutes from './routes/AppRoutes';
-import LightTheme from './styles/themes/Light';
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import AppRoutes from "./routes/AppRoutes";
+import LightTheme from "./styles/themes/Light";
 
 function App() {
   return (
@@ -8,7 +8,7 @@ function App() {
       <CssBaseline />
       <AppRoutes />
     </ThemeProvider>
-  )
+  );
 }
 
 export default App;

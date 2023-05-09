@@ -1,67 +1,48 @@
 import { Add } from "@mui/icons-material";
 import { Fab, Grid } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ResponsiveAppBar from "../../components/AppBar";
 import CardCN from "../../components/Card";
 import Modal from "../../components/Modal";
-import { Contact } from "../../types";
-
-const dataMock: Contact[] = [
-  {
-    name: "John Doe",
-    email: "j@j.com",
-    phone: "12121212",
-    favorite: true,
-    createdAt: new Date().toLocaleDateString("pt-BR", {
-      dateStyle: "long",
-    }),
-  },
-  {
-    name: "Jane Doe",
-    email: "j@j.com",
-    phone: "13131313",
-    favorite: false,
-    createdAt: new Date().toLocaleDateString("pt-BR", {
-      dateStyle: "long",
-    }),
-  },
-  {
-    name: "John Doe",
-    email: "j@j.com",
-    phone: "14141414",
-    favorite: false,
-    createdAt: new Date().toLocaleDateString("pt-BR", {
-      dateStyle: "long",
-    }),
-  },
-  {
-    name: "John Doe",
-    email: "j@j.com",
-    phone: "15151515",
-    favorite: false,
-    createdAt: new Date().toLocaleDateString("pt-BR", {
-      dateStyle: "long",
-    }),
-  },
-];
+import { useAppSelector } from "../../store/hooks";
+import { selectAllContacts } from "../../store/modules/contacts/contactsSlice";
 
 const Home: React.FC = () => {
-  const [contacts, setContacts] = useState<Contact[]>(dataMock);
   const [openModal, setOpenModal] = useState(false);
+
+  const user = useAppSelector((state) => state.user);
+  const contacts = useAppSelector(selectAllContacts);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user.isLogged) {
+      navigate("/login");
+    }
+  }, [user]);
 
   return (
     <React.Fragment>
       <ResponsiveAppBar />
-      <Grid container spacing={2} marginTop={2} marginLeft={2}>
-        {contacts.map((item) => (
-          <Grid item key={item.email} xs={12} sm={6} md={4} xl={3}>
-            <CardCN
-              contact={item}
-              contacts={contacts}
-              setContacts={setContacts}
-            />
-          </Grid>
-        ))}
+      <Grid container spacing={1}>
+        {contacts
+          .filter((contact) => contact.createdBy === user.email)
+          .map((contact) => (
+            <Grid
+              item
+              key={contact.email}
+              xs={12}
+              sm={6}
+              md={4}
+              xl={2}
+              marginLeft={2}
+              marginTop={2}
+            >
+              <CardCN
+                contact={contact}
+              />
+            </Grid>
+          ))}
       </Grid>
 
       <Fab
@@ -77,7 +58,6 @@ const Home: React.FC = () => {
         open={openModal}
         context="create"
         handleClose={() => setOpenModal(false)}
-        setContacts={setContacts}
       />
     </React.Fragment>
   );

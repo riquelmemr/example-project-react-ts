@@ -4,6 +4,7 @@ export interface Contact {
   phone: string;
   favorite: boolean;
   createdAt: string;
+  createdBy: string;
 }
 
 export type Context = "create" | "update" | "delete";

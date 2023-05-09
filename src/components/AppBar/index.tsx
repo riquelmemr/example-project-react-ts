@@ -10,33 +10,33 @@ import {
   MenuItem,
   Toolbar,
   Tooltip,
-  Typography
+  Typography,
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { removeUser } from "../../store/modules/user/userSlice";
 
 const pages = [
-  {label: "products", url:"/products"}, 
-  {label: "pricing", url:"/pricing"}, 
-  {label: "blog", url: "/blog"}
+  { label: "products", url: "/products" },
+  { label: "pricing", url: "/pricing" },
+  { label: "blog", url: "/blog" },
 ];
 const settings = [
-  {label: "Profile", url: "/profile"},
-  {label: "Account", url: "/account"},
-  {label: "Dashboard", url: "/dashboard"},
-  {label: "Logout", url: "/logout"}
+  { label: "Logout", url: "/login" },
 ];
 
 const ResponsiveAppBar: React.FC = () => {
-
-  const navigate = useNavigate();
-
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+
+  const user = useAppSelector((state) => state.user);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -55,7 +55,7 @@ const ResponsiveAppBar: React.FC = () => {
 
   return (
     <AppBar position="static" color="secondary">
-      <Container maxWidth="xl" component='header'>
+      <Container maxWidth="xl" component="header">
         <Toolbar disableGutters>
           <Adb sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
@@ -146,7 +146,7 @@ const ResponsiveAppBar: React.FC = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={user.email.toUpperCase()} src="./assets/vite.svg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -166,7 +166,14 @@ const ResponsiveAppBar: React.FC = () => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting.label} onClick={() => navigate(setting.url)}>
+                <MenuItem
+                  key={setting.label}
+                  onClick={() => {
+                    handleCloseUserMenu();
+                    dispatch(removeUser())
+                    navigate(setting.url)
+                  }}
+                >
                   <Typography textAlign="center">{setting.label}</Typography>
                 </MenuItem>
               ))}

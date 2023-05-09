@@ -9,13 +9,14 @@ import {
   TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Contact } from "../../types";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { addOne, deleteOne, updateOne } from "../../store/modules/contacts/contactsSlice";
+import { Contact } from "../../types/contact";
 
 interface ModalProps {
   context: "create" | "update" | "delete";
   open: boolean;
   handleClose: () => void;
-  setContacts: React.Dispatch<React.SetStateAction<Contact[]>>;
   contact?: Contact;
 }
 
@@ -23,12 +24,14 @@ const Modal: React.FC<ModalProps> = ({
   context,
   open,
   handleClose,
-  setContacts,
   contact,
 }) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user);
 
   useEffect(() => {
     if (context == "update" && contact) {
@@ -49,33 +52,18 @@ const Modal: React.FC<ModalProps> = ({
           createdAt: new Date().toLocaleDateString("pt-BR", {
             dateStyle: "long",
           }),
+          createdBy: user.email
         };
 
-        setContacts((prevState) => [...prevState, newContact]);
+        dispatch(addOne(newContact));
         break;
 
       case "delete":
-        contact &&
-          setContacts((prevState) =>
-            prevState.filter((item) => item.phone !== contact?.phone)
-          );
+        contact && dispatch(deleteOne(contact.email));
         break;
 
       case "update":
-        contact &&
-          setContacts((prevState) => prevState.map((item) => {
-            if (contact && item.phone === contact?.phone) {
-              return {
-                ...item,
-                name,
-                phone,
-                email,
-              };
-            }
-
-            return item;
-          }));
-
+        contact && dispatch(updateOne({ id: contact.email, changes: { name, phone, email } }));
         break;
       
       default:
